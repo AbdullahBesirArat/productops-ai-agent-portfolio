@@ -1,0 +1,40 @@
+{
+    "name": "productops-ai-agent",
+    "version": "0.0.0",
+    "private": true,
+    "type": "module",
+    "engines": {
+        "node": "24.x"
+    },
+    "dependencies": {
+        "fastify": "^5.6.2",
+        "jose": "^6.2.17",
+        "pg": "^8.23.1"
+    },
+    "devDependencies": {
+        "@types/node": "^24.0.0",
+        "@types/pg": "^8.23.1",
+        "eslint": "^9.39.1",
+        "playwright-core": "^1.65.1",
+        "tsx": "^4.20.6",
+        "typescript": "~5.9.3",
+        "typescript-eslint": "^8.46.4"
+    },
+    "scripts": {
+        "dev": "tsx scripts/dev.ts",
+        "demo": "tsx scripts/dev.ts",
+        "lint": "eslint .",
+        "audit:gate": "tsx scripts/audit-gate.ts",
+        "typecheck": "tsc --noEmit && tsc -p tsconfig.test.json",
+        "test": "tsx --test test/*.test.ts",
+        "test:reliability": "tsx --env-file=.env.local --test --test-concurrency=1 --test-timeout=300000 test/reliability/*.test.ts",
+        "eval:chain": "tsx --env-file=.env.local scripts/eval-chain.ts",
+        "test:e2e": "tsx --env-file=.env.local --test --test-concurrency=1 --test-timeout=240000 test/e2e/*.test.ts",
+        "build": "tsc",
+        "db:migrate": "tsx --env-file=.env.local src/db/migrate.ts",
+        "test:db": "tsx --env-file=.env.local --test --test-concurrency=1 test/db/*.test.ts",
+        "db:bootstrap": "tsx --env-file=.env.local src/db/bootstrap.ts",
+        "db:seed": "tsx --env-file=.env.local src/db/seed.ts",
+        "db:setup": "npm run db:migrate && npm run db:bootstrap && npm run db:seed"
+    }
+}

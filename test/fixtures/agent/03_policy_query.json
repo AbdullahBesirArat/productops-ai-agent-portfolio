@@ -1,0 +1,24 @@
+{
+  "name": "03_policy_query",
+  "description": "Policy snippet quoted as data with a policy_snippet source.",
+  "adapter": "rule",
+  "tenant": "A",
+  "role": "viewer",
+  "request": "What is your returns policy?",
+  "expect": {
+    "status": "completed",
+    "http": 200,
+    "tools": [
+      [
+        "get_policy_snippet",
+        "ok"
+      ]
+    ],
+    "answerIncludes": [
+      "returns",
+      "quoted as data"
+    ],
+    "sources": 1,
+    "sourceEntity": "policy_snippet"
+  }
+}

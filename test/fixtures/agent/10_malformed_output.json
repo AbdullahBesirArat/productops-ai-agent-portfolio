@@ -1,0 +1,21 @@
+{
+  "name": "10_malformed_output",
+  "description": "Structured output is malformed (tool_call without a tool).",
+  "adapter": "scripted",
+  "tenant": "A",
+  "role": "owner",
+  "request": "status",
+  "steps": [
+    {
+      "output": {
+        "kind": "tool_call"
+      }
+    }
+  ],
+  "expect": {
+    "status": "invalid_model_output",
+    "http": 502,
+    "errorCode": "INVALID_MODEL_OUTPUT",
+    "tools": []
+  }
+}

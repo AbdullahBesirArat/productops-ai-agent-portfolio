@@ -1,0 +1,28 @@
+{
+  "name": "13_total_timeout",
+  "description": "Slow model exceeds the (test-shortened) total run deadline.",
+  "adapter": "scripted",
+  "tenant": "A",
+  "role": "owner",
+  "request": "status",
+  "limits": {
+    "totalTimeoutMs": 300
+  },
+  "steps": [
+    {
+      "delayMs": 5000,
+      "output": {
+        "kind": "final_answer",
+        "template": "cannot_verify",
+        "sourceIds": []
+      }
+    }
+  ],
+  "expect": {
+    "status": "timeout",
+    "http": 504,
+    "errorCode": "RUN_TIMEOUT",
+    "tools": [],
+    "maxDurationMs": 2500
+  }
+}

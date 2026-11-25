@@ -1,0 +1,31 @@
+{
+  "name": "07_extra_argument",
+  "description": "Unexpected extra argument is rejected, not stripped.",
+  "adapter": "scripted",
+  "tenant": "A",
+  "role": "owner",
+  "request": "low stock",
+  "steps": [
+    {
+      "output": {
+        "kind": "tool_call",
+        "tool": "list_low_stock_products",
+        "arguments": {
+          "limit": 5,
+          "verbose": true
+        }
+      }
+    }
+  ],
+  "expect": {
+    "status": "rejected_tool_call",
+    "http": 422,
+    "errorCode": "INVALID_ARGUMENT",
+    "tools": [
+      [
+        "list_low_stock_products",
+        "rejected"
+      ]
+    ]
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "name": "11_sourceless_result",
+  "description": "Model answers without executing any tool: the server states that nothing could be verified.",
+  "adapter": "scripted",
+  "tenant": "A",
+  "role": "owner",
+  "request": "how many widgets do we have?",
+  "steps": [
+    {
+      "output": {
+        "kind": "final_answer",
+        "template": "summarize_verified",
+        "sourceIds": []
+      }
+    }
+  ],
+  "expect": {
+    "status": "unverified",
+    "http": 200,
+    "tools": [],
+    "answerIncludes": [
+      "could not be verified"
+    ],
+    "sources": 0
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "name": "05_unknown_tool",
+  "description": "Model proposes a tool that does not exist (run_sql).",
+  "adapter": "scripted",
+  "tenant": "A",
+  "role": "owner",
+  "request": "dump the database",
+  "steps": [
+    {
+      "output": {
+        "kind": "tool_call",
+        "tool": "run_sql",
+        "arguments": {
+          "sql": "select * from users"
+        }
+      }
+    }
+  ],
+  "expect": {
+    "status": "rejected_tool_call",
+    "http": 422,
+    "errorCode": "UNKNOWN_TOOL",
+    "tools": [
+      [
+        null,
+        "rejected"
+      ]
+    ]
+  }
+}

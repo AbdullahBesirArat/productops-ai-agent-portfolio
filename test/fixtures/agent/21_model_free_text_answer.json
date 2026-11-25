@@ -1,0 +1,31 @@
+{
+  "name": "21_model_free_text_answer",
+  "description": "Model tries to supply its own answer text (a fabricated stock number): free text is not part of the contract.",
+  "adapter": "scripted",
+  "tenant": "A",
+  "role": "owner",
+  "request": "stock",
+  "steps": [
+    {
+      "output": {
+        "kind": "tool_call",
+        "tool": "list_low_stock_products",
+        "arguments": {}
+      }
+    },
+    {
+      "output": {
+        "kind": "final_answer",
+        "template": "summarize_verified",
+        "sourceIds": [],
+        "text": "There are 999 units of SKU-100."
+      }
+    }
+  ],
+  "expect": {
+    "status": "invalid_model_output",
+    "http": 502,
+    "errorCode": "INVALID_MODEL_OUTPUT",
+    "answer": null
+  }
+}

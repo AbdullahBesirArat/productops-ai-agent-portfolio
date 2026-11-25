@@ -1,0 +1,27 @@
+{
+  "name": "04_order_not_found",
+  "description": "Missing order is stated as unverifiable; nothing is invented.",
+  "adapter": "rule",
+  "tenant": "A",
+  "role": "owner",
+  "request": "Where is ORD-9999?",
+  "expect": {
+    "status": "unverified",
+    "http": 200,
+    "tools": [
+      [
+        "get_order_status",
+        "not_found"
+      ]
+    ],
+    "answerIncludes": [
+      "The requested order could not be verified: no matching order was found for your organization."
+    ],
+    "answerExcludes": [
+      "ORD-9999",
+      "shipped",
+      "pending"
+    ],
+    "sources": 0
+  }
+}

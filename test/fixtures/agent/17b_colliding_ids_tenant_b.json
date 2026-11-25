@@ -1,0 +1,30 @@
+{
+  "name": "17b_colliding_ids_tenant_b",
+  "description": "Same SKU / order code exist in both tenants: Tenant B gets its own data.",
+  "adapter": "rule",
+  "tenant": "B",
+  "role": "owner",
+  "request": "Status of ORD-1001 and which products are low on stock?",
+  "expect": {
+    "status": "completed",
+    "http": 200,
+    "tools": [
+      [
+        "get_order_status",
+        "ok"
+      ],
+      [
+        "list_low_stock_products",
+        "ok"
+      ]
+    ],
+    "answerIncludes": [
+      "pending",
+      "Beta"
+    ],
+    "answerExcludes": [
+      "shipped",
+      "Alpha"
+    ]
+  }
+}

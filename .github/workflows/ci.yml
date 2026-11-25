@@ -1,0 +1,96 @@
+name: ProductOps checks
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+permissions:
+  contents: read
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci
+      - name: Production dependency audit
+        run: npm audit --omit=dev --audit-level=high
+      - name: Full dependency report gate (scoped, expiring exception)
+        run: npm run audit:gate
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
+  db-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci
+      - name: Generate ephemeral local credentials
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          : > .env.local
+          for name in PRODUCTOPS_DB_PASSWORD PRODUCTOPS_MIGRATOR_PASSWORD PRODUCTOPS_BOOTSTRAP_PASSWORD PRODUCTOPS_APP_PASSWORD PRODUCTOPS_AUTH_PASSWORD PRODUCTOPS_DEMO_PASSWORD; do
+            value="$(openssl rand -hex 32)"
+            echo "::add-mask::$value"
+            printf '%s=%s\n' "$name" "$value" >> .env.local
+            printf -v "$name" '%s' "$value"
+          done
+          cat >> .env.local <<EOF
+          PRODUCTOPS_DB_URL=postgres://productops_app:${PRODUCTOPS_APP_PASSWORD}@127.0.0.1:54329/productops_dev
+          PRODUCTOPS_AUTH_DB_URL=postgres://productops_authsvc:${PRODUCTOPS_AUTH_PASSWORD}@127.0.0.1:54329/productops_dev
+          PRODUCTOPS_AUTH_TEST_DB_URL=postgres://productops_authsvc:${PRODUCTOPS_AUTH_PASSWORD}@127.0.0.1:54329/productops_test
+          PRODUCTOPS_TEST_DB_URL=postgres://productops_app:${PRODUCTOPS_APP_PASSWORD}@127.0.0.1:54329/productops_test
+          PRODUCTOPS_MIGRATOR_DB_URL=postgres://productops_migrator:${PRODUCTOPS_MIGRATOR_PASSWORD}@127.0.0.1:54329/productops_dev
+          PRODUCTOPS_MIGRATOR_TEST_DB_URL=postgres://productops_migrator:${PRODUCTOPS_MIGRATOR_PASSWORD}@127.0.0.1:54329/productops_test
+          PRODUCTOPS_BOOTSTRAP_DB_URL=postgres://productops_bootstrap:${PRODUCTOPS_BOOTSTRAP_PASSWORD}@127.0.0.1:54329/productops_dev
+          PRODUCTOPS_BOOTSTRAP_TEST_DB_URL=postgres://productops_bootstrap:${PRODUCTOPS_BOOTSTRAP_PASSWORD}@127.0.0.1:54329/productops_test
+          EOF
+      - run: docker compose --env-file .env.local up -d
+      - name: Wait for Postgres and provision missing bootstrap role
+        shell: bash
+        run: |
+          set -euo pipefail
+          ready=false
+          for attempt in $(seq 1 60); do
+            if docker compose --env-file .env.local exec -T productops-db pg_isready -h 127.0.0.1 -U productops -d productops_dev; then
+              ready=true
+              break
+            fi
+            sleep 2
+          done
+          test "$ready" = true
+          exists="$(docker compose --env-file .env.local exec -T productops-db psql -U productops -d productops_dev -Atqc "SELECT 1 FROM pg_roles WHERE rolname='productops_bootstrap'")"
+          if [ "$exists" != 1 ]; then
+            docker compose --env-file .env.local exec -T productops-db bash /docker-entrypoint-initdb.d/02-auth-roles.sh
+          fi
+          docker compose --env-file .env.local exec -T productops-db bash /docker-entrypoint-initdb.d/03-auth-service-role.sh
+      - run: npm run db:migrate
+      - run: npm run db:bootstrap
+      - run: npm run db:seed
+      - run: npm run test:db
+      - name: Browser E2E (system Chrome on the runner, loopback only)
+        run: npm run test:e2e
+      - name: Reliability and failure-injection tests
+        run: npm run test:reliability
+      - name: Synthetic chain evaluation (hard invariants)
+        run: npm run eval:chain
+      - name: Remove ephemeral database
+        if: always()
+        run: docker compose --env-file .env.local down -v

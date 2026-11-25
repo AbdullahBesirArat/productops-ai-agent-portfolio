@@ -1,0 +1,31 @@
+{
+  "name": "08_wrong_tenant_argument",
+  "description": "Model tries to select Tenant B through an argument.",
+  "adapter": "scripted",
+  "tenant": "A",
+  "role": "owner",
+  "request": "order status for tenant b",
+  "steps": [
+    {
+      "output": {
+        "kind": "tool_call",
+        "tool": "get_order_status",
+        "arguments": {
+          "orderCode": "ORD-1001",
+          "tenantId": "00000002-0000-4000-8000-000000000001"
+        }
+      }
+    }
+  ],
+  "expect": {
+    "status": "rejected_tool_call",
+    "http": 422,
+    "errorCode": "FORBIDDEN_ARGUMENT",
+    "tools": [
+      [
+        "get_order_status",
+        "rejected"
+      ]
+    ]
+  }
+}

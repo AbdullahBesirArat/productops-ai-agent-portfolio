@@ -1,0 +1,34 @@
+{
+  "name": "20_forged_source_id",
+  "description": "Model claims a source id that no verified tool result produced.",
+  "adapter": "scripted",
+  "tenant": "A",
+  "role": "owner",
+  "request": "order status",
+  "steps": [
+    {
+      "output": {
+        "kind": "tool_call",
+        "tool": "get_order_status",
+        "arguments": {
+          "orderCode": "ORD-1001"
+        }
+      }
+    },
+    {
+      "output": {
+        "kind": "final_answer",
+        "template": "summarize_verified",
+        "sourceIds": [
+          "11111111-2222-4333-8444-555555555555"
+        ]
+      }
+    }
+  ],
+  "expect": {
+    "status": "invalid_model_output",
+    "http": 502,
+    "errorCode": "SOURCE_NOT_VERIFIED",
+    "answer": null
+  }
+}

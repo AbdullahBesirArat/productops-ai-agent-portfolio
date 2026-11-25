@@ -1,0 +1,19 @@
+{
+  "name": "14_model_error",
+  "description": "The model provider fails.",
+  "adapter": "scripted",
+  "tenant": "A",
+  "role": "owner",
+  "request": "status",
+  "steps": [
+    {
+      "throw": "provider down"
+    }
+  ],
+  "expect": {
+    "status": "model_error",
+    "http": 502,
+    "errorCode": "MODEL_ERROR",
+    "tools": []
+  }
+}

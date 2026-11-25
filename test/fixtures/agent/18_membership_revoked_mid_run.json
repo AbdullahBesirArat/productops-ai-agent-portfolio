@@ -1,0 +1,42 @@
+{
+  "name": "18_membership_revoked_mid_run",
+  "description": "Membership is removed between the first and second tool call: the second call is refused.",
+  "adapter": "scripted",
+  "tenant": "A",
+  "role": "viewer",
+  "request": "stock then policy",
+  "steps": [
+    {
+      "output": {
+        "kind": "tool_call",
+        "tool": "list_low_stock_products",
+        "arguments": {}
+      }
+    },
+    {
+      "hook": "revoke_membership",
+      "output": {
+        "kind": "tool_call",
+        "tool": "get_policy_snippet",
+        "arguments": {
+          "topic": "returns"
+        }
+      }
+    }
+  ],
+  "expect": {
+    "status": "forbidden",
+    "http": 403,
+    "errorCode": "FORBIDDEN",
+    "tools": [
+      [
+        "list_low_stock_products",
+        "ok"
+      ],
+      [
+        null,
+        "forbidden"
+      ]
+    ]
+  }
+}

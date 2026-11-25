@@ -1,0 +1,34 @@
+{
+  "name": "16_unauthorized_tool",
+  "description": "Tool requires a permission the caller's CURRENT DB role lacks (gated registry, viewer).",
+  "adapter": "scripted",
+  "tenant": "A",
+  "role": "viewer",
+  "request": "policy",
+  "gated": {
+    "tool": "get_policy_snippet",
+    "permission": "draft:create"
+  },
+  "steps": [
+    {
+      "output": {
+        "kind": "tool_call",
+        "tool": "get_policy_snippet",
+        "arguments": {
+          "topic": "returns"
+        }
+      }
+    }
+  ],
+  "expect": {
+    "status": "forbidden",
+    "http": 403,
+    "errorCode": "FORBIDDEN",
+    "tools": [
+      [
+        "get_policy_snippet",
+        "forbidden"
+      ]
+    ]
+  }
+}

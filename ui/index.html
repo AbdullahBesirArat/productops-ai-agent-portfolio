@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Support Review Desk</title>
+  <link rel="stylesheet" href="/ui/style.css">
+  <script type="module" src="/ui/app.js"></script>
+</head>
+<body>
+  <header>
+    <p class="banner">LOCAL DEMO — synthetic data only. Drafts are never sent. Approving only records an internal decision; nothing leaves this system.</p>
+    <div class="shell masthead">
+      <h1>Support Review Desk</h1>
+      <button type="button" id="sign-out" hidden>Sign out</button>
+    </div>
+  </header>
+  <main class="shell">
+    <p id="status" role="status" aria-live="polite" tabindex="-1"></p>
+    <section id="sign-in" class="card login">
+      <h2 tabindex="-1">Sign in</h2>
+      <form id="login-form">
+        <label for="slug">Organisation slug</label>
+        <input id="slug" required maxlength="40" autocomplete="organization">
+        <label for="email">E-mail</label>
+        <input id="email" type="email" required maxlength="254" autocomplete="username">
+        <label for="password">Password</label>
+        <input id="password" type="password" required maxlength="256" autocomplete="current-password">
+        <button type="button" id="login" class="primary">Sign in</button>
+      </form>
+    </section>
+    <div id="workspace" hidden>
+      <section class="card" aria-labelledby="compose-heading">
+        <h2 id="compose-heading" tabindex="-1">Compose a draft</h2>
+        <label for="message">Synthetic customer message</label>
+        <textarea id="message" maxlength="1000" required rows="4"></textarea>
+        <label for="language">Draft language</label>
+        <select id="language">
+          <option value="auto">Detect automatically</option>
+          <option value="tr">Turkish</option>
+          <option value="en">English</option>
+        </select>
+        <div class="actions">
+          <button type="button" id="preview" class="primary">Preview draft</button>
+          <button type="button" id="submit-review" disabled>Send to human review</button>
+        </div>
+        <div id="preview-result"></div>
+      </section>
+      <section class="card" aria-labelledby="queue-heading">
+        <h2 id="queue-heading">Review queue</h2>
+        <div class="filters">
+          <div>
+            <label for="state">State</label>
+            <select id="state">
+              <option value="">All states</option>
+              <option value="pending_review">Pending review</option>
+              <option value="edited">Edited</option>
+              <option value="blocked">Blocked</option>
+              <option value="approved_internal">Approved internally</option>
+              <option value="rejected">Rejected</option>
+            </select>
+          </div>
+          <div>
+            <label for="limit">Result limit</label>
+            <input type="number" id="limit" min="1" max="50" value="20" required>
+          </div>
+          <button type="button" id="refresh">Refresh queue</button>
+        </div>
+        <ul id="queue" class="queue"></ul>
+        <section id="detail" hidden>
+          <h3 id="detail-heading" tabindex="-1">Review details</h3>
+          <p id="review-state" class="badge"></p>
+          <div id="review-content"></div>
+          <div class="decision">
+            <p>Approve records an internal decision. It does NOT send anything.</p>
+            <label for="edit-text">Edit customer draft</label>
+            <textarea id="edit-text" maxlength="1500" required rows="5"></textarea>
+            <div class="actions">
+              <button type="button" id="save">Save edit</button>
+              <button type="button" id="approve" class="primary">Approve (internal only)</button>
+            </div>
+            <label for="reason">Rejection reason</label>
+            <select id="reason">
+              <option value="inaccurate">Inaccurate</option>
+              <option value="unsafe_disclosure">Unsafe disclosure</option>
+              <option value="out_of_scope">Out of scope</option>
+              <option value="duplicate">Duplicate</option>
+              <option value="other">Other</option>
+            </select>
+            <button type="button" id="reject">Reject</button>
+          </div>
+        </section>
+      </section>
+    </div>
+  </main>
+  <footer class="shell">The classifier is rule-based and uses no AI model.</footer>
+</body>
+</html>

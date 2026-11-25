@@ -1,0 +1,23 @@
+{
+  "name": "02_order_status_query",
+  "description": "Order status from the verified order row.",
+  "adapter": "rule",
+  "tenant": "A",
+  "role": "member",
+  "request": "What is the status of ORD-1001?",
+  "expect": {
+    "status": "completed",
+    "http": 200,
+    "tools": [
+      [
+        "get_order_status",
+        "ok"
+      ]
+    ],
+    "answerIncludes": [
+      "ORD-1001",
+      "shipped"
+    ],
+    "sources": 1
+  }
+}

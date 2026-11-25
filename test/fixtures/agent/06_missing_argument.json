@@ -1,0 +1,28 @@
+{
+  "name": "06_missing_argument",
+  "description": "Required argument missing.",
+  "adapter": "scripted",
+  "tenant": "A",
+  "role": "owner",
+  "request": "order status",
+  "steps": [
+    {
+      "output": {
+        "kind": "tool_call",
+        "tool": "get_order_status",
+        "arguments": {}
+      }
+    }
+  ],
+  "expect": {
+    "status": "rejected_tool_call",
+    "http": 422,
+    "errorCode": "INVALID_ARGUMENT",
+    "tools": [
+      [
+        "get_order_status",
+        "rejected"
+      ]
+    ]
+  }
+}

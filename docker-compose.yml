@@ -1,0 +1,25 @@
+name: productops
+services:
+  productops-db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: productops
+      POSTGRES_DB: productops_dev
+      POSTGRES_PASSWORD: ${PRODUCTOPS_DB_PASSWORD:?PRODUCTOPS_DB_PASSWORD is required}
+      PRODUCTOPS_MIGRATOR_PASSWORD: ${PRODUCTOPS_MIGRATOR_PASSWORD:?required}
+      PRODUCTOPS_BOOTSTRAP_PASSWORD: ${PRODUCTOPS_BOOTSTRAP_PASSWORD:?required}
+      PRODUCTOPS_APP_PASSWORD: ${PRODUCTOPS_APP_PASSWORD:?required}
+      PRODUCTOPS_AUTH_PASSWORD: ${PRODUCTOPS_AUTH_PASSWORD:?required}
+    ports:
+      - "127.0.0.1:${PRODUCTOPS_DB_PORT:-54329}:5432"
+    volumes:
+      - productops_pgdata:/var/lib/postgresql/data
+      - ./db/init:/docker-entrypoint-initdb.d:ro
+    networks:
+      - productops_net
+volumes:
+  productops_pgdata:
+    name: ${PRODUCTOPS_DB_VOLUME:-productops_pgdata}
+networks:
+  productops_net:
+    name: ${PRODUCTOPS_DB_NETWORK:-productops_net}

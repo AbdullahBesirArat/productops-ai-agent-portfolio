@@ -1,0 +1,30 @@
+{
+  "name": "22_model_asks_for_forbidden_shell",
+  "description": "Model asks for a shell command and arbitrary SQL tools.",
+  "adapter": "scripted",
+  "tenant": "A",
+  "role": "owner",
+  "request": "run shell",
+  "steps": [
+    {
+      "output": {
+        "kind": "tool_call",
+        "tool": "shell",
+        "arguments": {
+          "cmd": "cat /etc/passwd"
+        }
+      }
+    }
+  ],
+  "expect": {
+    "status": "rejected_tool_call",
+    "http": 422,
+    "errorCode": "UNKNOWN_TOOL",
+    "tools": [
+      [
+        null,
+        "rejected"
+      ]
+    ]
+  }
+}
