@@ -113,4 +113,4 @@ Tenant isolation, scoped credentials, a read-only gateway and four-eyes review a
 
 ## License
 
-No license has been granted yet. All rights reserved by the author until a license is added.
+Released under the [MIT License](LICENSE).
